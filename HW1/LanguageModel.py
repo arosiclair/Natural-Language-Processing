@@ -22,6 +22,7 @@ class LanguageModel:
     #A dictionary that will save the count for words we have already counted
     self.wordCount = {}
 
+  #Returns the joint probability of a sequence of words 
   def bigramProb(self, wordList):
     pass
 
@@ -51,6 +52,20 @@ class LanguageModel:
       prev = word
 
     return float((bigramCount + 1)) / (self.count(word1) + self.numUniqueWords)
+
+  #Returns the Absolute Discounting probability of a bigram
+  def getADProb(self, word1, word2):
+    bigramCount = 0
+
+    prev = self.words[0]
+    for word in self.words:
+      if prev == word1 and word == word2:
+        bigramCount += 1
+
+      prev = word
+
+    #discount the bigramCount by 0.5
+    return (bigramCount - 0.5) / self.count(word1)
 
 
   #Returns the Maximum Likelihood Estimate for the occurence of a single word
