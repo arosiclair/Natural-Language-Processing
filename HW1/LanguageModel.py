@@ -2,9 +2,10 @@ class LanguageModel:
 
   #Constructor
   def __init__(self, corpus):
-    self.corpus = corpus
+    #Instance variable to all lower case corpus
+    self.corpus = corpus.lower()
     #Split string into sentences delimited by a period
-    self.sentences = corpus.split(".")
+    self.sentences = self.corpus.split(".")
 
     #Split sentences into a list of all words in the corpus, delimitted by a space
     self.words = []
