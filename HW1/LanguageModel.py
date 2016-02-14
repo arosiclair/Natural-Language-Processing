@@ -23,8 +23,19 @@ class LanguageModel:
     self.wordCount = {}
 
   #Returns the joint probability of a sequence of words 
-  def bigramProb(self, wordList):
-    pass
+  def getSequenceProb(self, wordList):
+    print wordList
+    #Start off with the MLE of the first word in the sequence
+    result = self.getMLE(wordList[0])
+    print result
+
+    #Multiply the bigram probabilities of the next successive pairs of words in 
+    #the sequence
+    for i in xrange(1, len(wordList)):
+      result *= self.getBigramProb(wordList[i - 1], wordList[i])
+      print result
+
+    return result
 
   #Returns the MLE conditional probability of the bigram "word1 word2"
   def getBigramProb(self, word1, word2):
