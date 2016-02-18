@@ -20,8 +20,9 @@ class LanguageModel:
         uniqueWords.append(word)
         self.numUniqueWords += 1
 
-    #A dictionary that will save the count for words we have already counted
+    #Dictionaries that will save the count for words and bigrams we have already counted
     self.wordCount = {}
+    self.bigramCount = {}
 
   #Returns the joint probability of a sequence of words 
   def getSequenceProb(self, wordList):
@@ -40,44 +41,20 @@ class LanguageModel:
 
   #Returns the MLE conditional probability of the bigram "word1 word2"
   def getBigramProb(self, word1, word2):
-    bigramCount = 0
-
-    prev = self.words[0]
-    for word in self.words:
-      if prev == word1 and word == word2:
-        bigramCount += 1
-
-      prev = word
-
-    return float(bigramCount) / self.count(word1)
+    numBigrams = self.bigramCount(word1, word2)
+    return float(numBigrams) / self.count(word1)
 
   #Returns the MLE conditional probability of the bigram "word1 word2" with 
   #Laplace smoothing
   def getSmoothedBigramProb(self, word1, word2):
-    bigramCount = 0
-
-    prev = self.words[0]
-    for word in self.words:
-      if prev == word1 and word == word2:
-        bigramCount += 1
-
-      prev = word
-
-    return float((bigramCount + 1)) / (self.count(word1) + self.numUniqueWords)
+    numBigrams = self.bigramCount(word1, word2)
+    return float(numBigrams + 1)) / (self.count(word1) + self.numUniqueWords)
 
   #Returns the Absolute Discounting probability of a bigram
   def getADProb(self, word1, word2):
-    bigramCount = 0
-
-    prev = self.words[0]
-    for word in self.words:
-      if prev == word1 and word == word2:
-        bigramCount += 1
-
-      prev = word
-
+    
     #discount the bigramCount by 0.5
-    return (bigramCount - 0.5) / self.count(word1)
+    return (bigramCount(word1, word2) - 0.5) / self.count(word1)
 
 
   #Returns the Maximum Likelihood Estimate for the occurence of a single word
@@ -101,3 +78,21 @@ class LanguageModel:
       #Save count to the dictionary and return
       self.wordCount[word] = num
       return num
+
+#Get's the number of occurences for a bigram in the corpus. Saves it in the
+#bigramCount map for quick access
+def bigramCount(self, word1, word2):
+  try:
+    return self.bigramCount[(word1, word2)]
+  except KeyError, e:
+    #We haven't counted this bigram yet so count now
+    count = 0
+    prev = self.words[0]
+    for word in self.words:
+      if prev == word1 and word == word2:
+        count += 1
+
+      prev = word
+
+    self.bigramCount[(word1, word2)] = count
+    return count
