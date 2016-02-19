@@ -29,9 +29,7 @@ class LanguageModel:
 
   #Returns the joint probability of a sequence of words 
   def getSequenceProb(self, wordList):
-    #Start off with the MLE of the first word in the sequence
-    result = self.getMLE(wordList[0])
-    print result
+    result = 1
 
     wordList.insert(0, "<s>")
     wordList.append("</s>")
@@ -40,7 +38,6 @@ class LanguageModel:
     #the sequence
     for i in xrange(1, len(wordList)):
       result *= self.getBigramProb(wordList[i - 1], wordList[i])
-      print result
 
     return result
 
