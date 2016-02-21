@@ -1,3 +1,5 @@
+#Written in Python 2.7.11
+
 class LanguageModel:
 
   #Preprcess the corpus so that it is more easily scanned.
@@ -192,6 +194,12 @@ class LanguageModel:
     top20MLE = []
 
     for bigram in self.bigramCount.keys():
+      #Skip unnecessary bigrams
+      if bigram[0] == "<s>" and bigram[1] == "</s>":
+        continue
+      elif bigram[0] == "</s>" and bigram[1] == "<s>":
+        continue
+
       #The joint MLE probability
       prob = self.getBigramProb(bigram[1], bigram[0]) * self.getMLE(bigram[0])
 
@@ -215,13 +223,18 @@ class LanguageModel:
     #Print the top 20
     i = 1
     for bigram in top20MLE:
-      output.write("%-3d%-17s%-20s%20.10f\n" % (i, bigram[0], bigram[1], bigram[2])) 
+      output.write("%-3d%-17s%-20s%20.10f\n" % (i, bigram[1], bigram[0], bigram[2])) 
       i += 1
 
   def writeTopLaplace(self, output):
     top20Laplace = []
     #Top 20 Laplace Smoothing
     for bigram in self.bigramCount.keys():
+      #Skip unnecessary bigrams
+      if bigram[0] == "<s>" and bigram[1] == "</s>":
+        continue
+      elif bigram[0] == "</s>" and bigram[1] == "<s>":
+        continue
       #The joint MLE probability
       prob = self.getSmoothedBigramProb(bigram[1], bigram[0]) * self.getSmoothedUnigramProb(bigram[0])
 
@@ -245,13 +258,19 @@ class LanguageModel:
     #Print the top 20
     i = 1
     for bigram in top20Laplace:
-      output.write("%-3d%-17s%-20s%20.10f\n" % (i, bigram[0], bigram[1], bigram[2])) 
+      output.write("%-3d%-17s%-20s%20.10f\n" % (i, bigram[1], bigram[0], bigram[2])) 
       i += 1
 
   def writeTopAD(self, output):
     top20AD = []
     #Top 20 Absolute Discounting
     for bigram in self.bigramCount.keys():
+      #Skip unnecessary bigrams
+      if bigram[0] == "<s>" and bigram[1] == "</s>":
+        continue
+      elif bigram[0] == "</s>" and bigram[1] == "<s>":
+        continue
+
       #The joint probability
       prob = self.getADProb(bigram[1], bigram[0]) * self.getADProb(bigram[0])
 
@@ -282,6 +301,12 @@ class LanguageModel:
     top20Katz = []
     #Top 20 Absolute Discounting
     for bigram in self.bigramCount.keys():
+      #Skip unnecessary bigrams
+      if bigram[0] == "<s>" and bigram[1] == "</s>":
+        continue
+      elif bigram[0] == "</s>" and bigram[1] == "<s>":
+        continue
+
       #The joint probability
       prob = self.getADProb(bigram[1], bigram[0]) * self.getADProb(bigram[0])
 
@@ -305,5 +330,5 @@ class LanguageModel:
     #Print the top 20
     i = 1
     for bigram in top20Katz:
-      output.write("%-3d%-17s%-20s%20.10f\n" % (i, bigram[0], bigram[1], bigram[2]))
+      output.write("%-3d%-17s%-20s%20.10f\n" % (i, bigram[1], bigram[0], bigram[2]))
       i += 1
