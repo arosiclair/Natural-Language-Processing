@@ -82,13 +82,24 @@ perplexity = 2.0 ** logSum
 
 print "The perplexity of the Laplace LanguageModel on the test corpus is: %f" % perplexity
 
-#Calculate the perplexity of the Absolute Discounting LM on the test corpus
+#Calculate the perplexity of the Katz Back-off LM on the test corpus
 logSum = 0
 for i in xrange(1, len(testTokens)):
-  logSum += log(lm.getADProb(testTokens[i - 1], testTokens[i]), 2)
+  logSum += log(lm.katzBigramProb(testTokens[i - 1], testTokens[i]), 2)
 
 logSum = logSum * (1.0 / len(testTokens)) * -1
 
 perplexity = 2.0 ** logSum
 
-print "The perplexity of the Absolute Discounting LanguageModel on the test corpus is: %f" % perplexity
+print "The perplexity of the Katz Back-off LanguageModel on the test corpus is: %f" % perplexity
+
+#Calculate the perplexity of the Unigram Absolute Discounting LM on the test corpus
+logSum = 0
+for token in testTokens:
+  logSum += log(lm.getADProb(token), 2)
+
+logSum = logSum * (1.0 / len(testTokens)) * -1
+
+perplexity = 2.0 ** logSum
+
+print "The perplexity of the unigram Absolute Discounting LanguageModel on the test corpus is: %f" % perplexity
