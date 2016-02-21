@@ -72,7 +72,7 @@ class LanguageModel:
       if self.count(word1) == 0:
         return 1.0 / self.vocabularySize
       else:
-        return (self.count(word1) - 0.5) / len(self.words)
+        return (self.count(word1) - 0.5) / self.vocabularySize
 
     #Bigram probability
     else:
@@ -89,7 +89,7 @@ class LanguageModel:
 
     #If the bigram is unseen
     elif self.count(word1, word2) == 0:
-      return self.alpha(word1) * self.beta(word2)
+      return self.alpha(word1) * self.beta(word1, word2)
 
   #Get's the number of occurences for a word in the corpus. Saves it in the 
   #wordCount map for quick access
@@ -132,16 +132,18 @@ class LanguageModel:
     remainingProb = 1.0
 
     for word in self.vocabulary:
-      remainingProb -= self.getADProb(word1, word)
+      if(self.count(word1, word) > 0):
+        remainingProb -= self.getADProb(word1, word)
 
     return remainingProb
 
-  def beta(self, word2):
+  def beta(self, word1, word2):
     numerator = self.getADProb(word2)
     denominator = 0
 
     for word in self.vocabulary:
-      denominator += self.getADProb(word)
+      if self.count(word1, word) == 0:
+        denominator += self.getADProb(word)
 
     return numerator / denominator
 
@@ -189,7 +191,7 @@ class LanguageModel:
 
     self.writeTopMLE(output)
     self.writeTopLaplace(output)
-    self.writeTopAD(output)
+    #self.writeTopAD(output)
     self.writeTopKatz(output)
 
 
@@ -205,7 +207,7 @@ class LanguageModel:
         continue
 
       #The joint MLE probability
-      prob = self.getMLEProb(bigram[1], bigram[0]) * self.getMLEProb(bigram[0])
+      prob = float(self.count(bigram[0], bigram[1])) / len(self.bigramCount)
 
       #Insert bigrams and probability as a 3 element list into the top20MLE list
       for i in xrange(0, 20):
@@ -227,7 +229,7 @@ class LanguageModel:
     #Print the top 20
     i = 1
     for bigram in top20MLE:
-      output.write("%-3d%-17s%-20s%20.10f\n" % (i, bigram[1], bigram[0], bigram[2])) 
+      output.write("%-3d%-17s%-20s%20.10f\n" % (i, bigram[0], bigram[1], bigram[2])) 
       i += 1
 
   def writeTopLaplace(self, output):
@@ -240,7 +242,7 @@ class LanguageModel:
       elif bigram[0] == "</s>" and bigram[1] == "<s>":
         continue
       #The joint MLE probability
-      prob = self.getSmoothedProb(bigram[1], bigram[0]) * self.getSmoothedProb(bigram[0])
+      prob = float(self.count(bigram[0], bigram[1]) + 1) / (len(self.bigramCount) + self.vocabularySize + 1)
 
       #Insert bigrams and probability as a 3 element list into the top20Laplace list
       for i in xrange(0, 20):
@@ -262,7 +264,7 @@ class LanguageModel:
     #Print the top 20
     i = 1
     for bigram in top20Laplace:
-      output.write("%-3d%-17s%-20s%20.10f\n" % (i, bigram[1], bigram[0], bigram[2])) 
+      output.write("%-3d%-17s%-20s%20.10f\n" % (i, bigram[0], bigram[1], bigram[2])) 
       i += 1
 
   def writeTopAD(self, output):
@@ -312,7 +314,7 @@ class LanguageModel:
         continue
 
       #The joint probability
-      prob = self.getADProb(bigram[1], bigram[0]) * self.getADProb(bigram[0])
+      prob = float(self.count(bigram[0], bigram[1]) - 0.5) / len(self.bigramCount)
 
       #Insert bigrams and probability as a 3 element list into the top20Katz list
       for i in xrange(0, 20):
@@ -334,5 +336,5 @@ class LanguageModel:
     #Print the top 20
     i = 1
     for bigram in top20Katz:
-      output.write("%-3d%-17s%-20s%20.10f\n" % (i, bigram[1], bigram[0], bigram[2]))
+      output.write("%-3d%-17s%-20s%20.10f\n" % (i, bigram[0], bigram[1], bigram[2]))
       i += 1
