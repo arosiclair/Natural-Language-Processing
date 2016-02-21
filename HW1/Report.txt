@@ -4,10 +4,10 @@ Natural Language Processing HW1
 -------------------------------
 The perplexity of the MLE LanguageModel on the test corpus is: 2.531941
 The perplexity of the Laplace LanguageModel on the test corpus is: 975.141231
-The perplexity of the Katz Back-off LanguageModel on the test corpus is:
-The perplexity of the Unigram AD Language Model on the test corpus is: 116.561757
+The perplexity of the Katz Back-off LanguageModel on the test corpus is: 300.403766
+The perplexity of the Unigram Absolute Discounting Language Model on the test corpus is: 116.561757
 -------------
-The MLE language model appears to best fit the test corpus since it has a much lower perplexity than the other models. The Laplace Smoothed model has a very high perplexity possibly because of the large amount of probability that is taken from bigrams seen in training. Since our training and test corpus are taken from the same document, smoothing for unseen bigrams may give us worse fitting probabilities. The Absolute Discounting model also gives us a worse perplexity, likely for similar reasons.
+The MLE language model appears to best fit the test corpus since it has a much lower perplexity than the other models. The Laplace Smoothed model has a very high perplexity possibly because of the large amount of probability that is taken from bigrams seen in training. Since our training and test corpus are taken from the same document, smoothing for unseen bigrams may give us worse fitting probabilities. The Absolute Discounting model also gives us a worse perplexity, likely for similar reasons. Katz Back-off also does worse since it relies on Absolute Discounting.
 -------------
 The top 20 bigrams are located in 'TopBigrams.txt'
 
