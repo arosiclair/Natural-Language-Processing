@@ -41,31 +41,30 @@ class LanguageModel:
     #Multiply the bigram probabilities of the next successive pairs of words in 
     #the sequence
     for i in xrange(1, len(wordList)):
-      result *= self.getBigramProb(wordList[i - 1], wordList[i])
+      result *= self.getMLEProb(wordList[i - 1], wordList[i])
 
     return result
-
-  #Returns the MLE conditional probability of the bigram "word1 word2"
-  def getBigramProb(self, word1, word2):
-    numBigrams = self.count(word1, word2)
-    return float(numBigrams) / self.count(word1)
+    
+  #Returns the Maximum Likelihood Estimate for the occurence of a single word
+  def getMLEProb(self, word1, word2 = None):
+    if word2 == None:
+      return float(self.count(word1)) / len(self.words)
+    else:
+      if self.count(word1) == 0:
+        return 0
+      else:
+        numBigrams = self.count(word1, word2)
+        return float(numBigrams) / self.count(word1)
 
   #Returns the MLE conditional probability of the bigram "word1 word2" with 
   #Laplace smoothing
-  def getSmoothedBigramProb(self, word1, word2):
-    numBigrams = self.count(word1, word2)
-    return float(numBigrams + 1) / (self.count(word1) + self.vocabularySize + 1)
+  def getSmoothedProb(self, word1, word2 = None):
+    if word2 == None:
+      return float(self.count(word1) + 1) / (len(self.words) + self.vocabularySize + 1)
+    else:
+      numBigrams = self.count(word1, word2)
+      return float(numBigrams + 1) / (self.count(word1) + self.vocabularySize + 1)
 
-  #Returns the probability of a bigram occuring using Katz Back-off method
-  def katzBigramProb(self, word1, word2):
-    #2 Part function: if the bigram is seen
-    if self.count(word1, word2) > 0:
-      return self.getADProb(word1, word2)
-
-    #If the bigram is unseen
-    elif self.count(word1, word2) == 0:
-      return self.alpha(word1) * self.beta(word2)
-    
   #Returns the Absolute Discounting probability of a bigram
   def getADProb(self, word1, word2 = None):
     #Unigram probability
@@ -77,15 +76,20 @@ class LanguageModel:
 
     #Bigram probability
     else:
-      return (self.count(word1, word2) - 0.5) / self.count(word1)
+      if self.count(word1) == 0 or self.count(word1, word2) == 0:
+        return 1.0 / self.vocabularySize
+      else:
+        return (self.count(word1, word2) - 0.5) / self.count(word1)
 
+  #Returns the probability of a bigram occuring using Katz Back-off method
+  def katzBigramProb(self, word1, word2):
+    #2 Part function: if the bigram is seen
+    if self.count(word1, word2) > 0:
+      return self.getADProb(word1, word2)
 
-  #Returns the Maximum Likelihood Estimate for the occurence of a single word
-  def getMLE(self, word):
-    return float(self.count(word)) / len(self.words)
-
-  def getSmoothedUnigramProb(self, word):
-    return float(self.count(word) + 1) / (len(self.words) + self.vocabularySize)
+    #If the bigram is unseen
+    elif self.count(word1, word2) == 0:
+      return self.alpha(word1) * self.beta(word2)
 
   #Get's the number of occurences for a word in the corpus. Saves it in the 
   #wordCount map for quick access
@@ -168,7 +172,7 @@ class LanguageModel:
     #estimations
     for bigram in self.bigramCount.keys():
       bigramsOutput.write("%-20s%-20s%15s" % (bigram[0], bigram[1], self.bigramCount[bigram]))
-      bigramsOutput.write("%15.10f%15.10f\n" % (self.getBigramProb(bigram[0], bigram[1]),
+      bigramsOutput.write("%15.10f%15.10f\n" % (self.getMLEProb(bigram[0], bigram[1]),
                                         self.katzBigramProb(bigram[0], bigram[1])))
     bigramsOutput.write("-" * 85 + "\n")
 
@@ -201,7 +205,7 @@ class LanguageModel:
         continue
 
       #The joint MLE probability
-      prob = self.getBigramProb(bigram[1], bigram[0]) * self.getMLE(bigram[0])
+      prob = self.getMLEProb(bigram[1], bigram[0]) * self.getMLEProb(bigram[0])
 
       #Insert bigrams and probability as a 3 element list into the top20MLE list
       for i in xrange(0, 20):
@@ -236,7 +240,7 @@ class LanguageModel:
       elif bigram[0] == "</s>" and bigram[1] == "<s>":
         continue
       #The joint MLE probability
-      prob = self.getSmoothedBigramProb(bigram[1], bigram[0]) * self.getSmoothedUnigramProb(bigram[0])
+      prob = self.getSmoothedProb(bigram[1], bigram[0]) * self.getSmoothedProb(bigram[0])
 
       #Insert bigrams and probability as a 3 element list into the top20Laplace list
       for i in xrange(0, 20):

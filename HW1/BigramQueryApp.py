@@ -63,7 +63,7 @@ while True:
       bigram = raw_input("> ").split()
       if(len(bigram) == 2):
         print "The Maximum Likelihood Estimate for %r is: %f" % (bigram, 
-                                                                lm.getBigramProb(bigram[0], bigram[1]))
+                                                                lm.getMLEProb(bigram[0], bigram[1]))
         break
       else:
         print "ERROR: Invalid bigram. A bigram is a sequence of 2 words separated by whitespace."
@@ -75,7 +75,7 @@ while True:
       bigram = raw_input("> ").split()
       if(len(bigram) == 2):
         print "The Laplace Smoothed Estimate for %r is: %f" % (bigram, 
-                                                                lm.getSmoothedBigramProb(bigram[0], bigram[1]))
+                                                                lm.getSmoothedProb(bigram[0], bigram[1]))
         break
       else:
         print "ERROR: Invalid bigram. A bigram is a sequence of 2 words separated by whitespace."
