@@ -192,7 +192,7 @@ class LanguageModel:
     self.writeTopMLE(output)
     self.writeTopLaplace(output)
     #self.writeTopAD(output)
-    self.writeTopKatz(output)
+    #self.writeTopKatz(output)
 
 
   def writeTopMLE(self, output):

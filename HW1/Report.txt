@@ -9,6 +9,57 @@ The perplexity of the Unigram Absolute Discounting Language Model on the test co
 -------------
 The MLE language model appears to best fit the test corpus since it has a much lower perplexity than the other models. The Laplace Smoothed model has a very high perplexity possibly because of the large amount of probability that is taken from bigrams seen in training. Since our training and test corpus are taken from the same document, smoothing for unseen bigrams may give us worse fitting probabilities. The Absolute Discounting model also gives us a worse perplexity, likely for similar reasons. Katz Back-off also does worse since it relies on Absolute Discounting.
 -------------
-The top 20 bigrams are located in 'TopBigrams.txt'
+The top 20 bigrams are also located in 'TopBigrams.txt'
 
+------------------------------------------------------------
+                     TOP 20 MLE BIGRAMS
+------------------------------------------------------------
+Bigram                                     Joint Probability
+------------------------------------------------------------
+1  of               the                         0.0161161640
+2  in               the                         0.0146800702
+3  <s>              the                         0.0087761289
+4  to               the                         0.0044678475
+5  <s>              in                          0.0041487155
+6  <s>              chapter                     0.0033508856
+7  can              be                          0.0033508856
+8  with             the                         0.0031913196
+9  it               is                          0.0030317536
+10 should           be                          0.0028721876
+11 <s>              ]                           0.0028721876
+12 and              the                         0.0027126217
+13 from             the                         0.0027126217
+14 the              fly                         0.0027126217
+15 <s>              (2)                         0.0027126217
+16 *                *                           0.0025530557
+17 discussion       of                          0.0023934897
+18 of               insects                     0.0023934897
+19 a                few                         0.0023934897
+20 for              the                         0.0020743577
+------------------------------------------------------------
+                   TOP 20 LAPLACE BIGRAMS
+------------------------------------------------------------
+Bigram                                     Joint Probability
+------------------------------------------------------------
+1  of               the                         0.0122009569
+2  in               the                         0.0111244019
+3  <s>              the                         0.0066985646
+4  to               the                         0.0034688995
+5  <s>              in                          0.0032296651
+6  <s>              chapter                     0.0026315789
+7  can              be                          0.0026315789
+8  with             the                         0.0025119617
+9  it               is                          0.0023923445
+10 should           be                          0.0022727273
+11 <s>              ]                           0.0022727273
+12 and              the                         0.0021531100
+13 from             the                         0.0021531100
+14 the              fly                         0.0021531100
+15 <s>              (2)                         0.0021531100
+16 *                *                           0.0020334928
+17 discussion       of                          0.0019138756
+18 of               insects                     0.0019138756
+19 a                few                         0.0019138756
+20 for              the                         0.0016746411
 
+As discussed in class, MLE gives the most probability to the most common words. So bigrams with articles and common prepositions like "the", "of", and "in" dominate the top bigram list. Since Laplace smoothing works in the same way as MLE, just with adjusted probabilities, it also ranks bigrams similarly.
