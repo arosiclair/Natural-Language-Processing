@@ -73,6 +73,9 @@ getTagCounts()
 laplaceEmissProbs = load_obj("laplace-emissions")
 laplaceTagUnigramProbs = load_obj("laplace-tag-unigrams")
 
+#Use the frequency based tagger method to predict a tag sequence and then write
+#it to an output file
 predictedTagSeq = decodeTagSequence(testWords)
+outputFile = open("freq-tagger-output.txt", "w")
 for tag in predictedTagSeq:
-  print tag
+  outputFile.write(tag + " ")
