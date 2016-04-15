@@ -25,6 +25,15 @@ def getTerminals():
 			if leaf.label not in terminals:
 				terminals.append(leaf.label)
 
+#Iterate over the training examples and generate a tree for each line
+def generateTrees():
+	for line in trainLines:
+		if line.strip() == 0:
+			continue
+
+		parsedTree = tree.Tree.from_str(line)
+		trees.append(parsedTree)
+
 def countRules(tree):
 	global ruleCounts
 	stack = []
@@ -72,6 +81,47 @@ def generatePCFG():
 			key.extend(expansion)
 			pcfg[tuple(key)] = prob
 
+def printTop10Rules():
+	top10 = []
+	for lhs in ruleCounts:
+		expansions = ruleCounts[lhs]
+		for expansion in expansions:
+			if len(expansion) < 2:
+				continue
+			for i in xrange(0, len(top10)):
+				if expansions[expansion] > top10[i][-1]:
+					entry = []
+					entry.append(lhs)
+					entry.extend(expansion)
+					entry.append(expansions[expansion])
+					top10.insert(i, entry)
+					break
+			
+			if len(top10) < 10:
+				entry = []
+				entry.append(lhs)
+				entry.extend(expansion)
+				entry.append(expansions[expansion])
+				top10.append(entry)
+				break
+
+			if len(top10) == 11:
+				top10.pop()
+
+	for entry in top10:
+		print "%-5s -> %-7s, %-10s| Frequency: %5d" % (entry[0], entry[1], entry[2], entry[3])
+
+def printRuleCounts():
+	for nonterminal in ruleCounts:
+		for rhs in ruleCounts[nonterminal]:
+			print "%-10s -> %-15s Prob: %f" % (nonterminal, rhs, ruleCounts[nonterminal][rhs])
+
+def printPCFG():
+	for rule in pcfg:
+		print "%-10s -> %-25s Prob: %.10f" % (rule[0], rule[1:], pcfg[rule])
+
+#--- BEGIN SCRIPT ---
+
 #Open the training file and get a list of lines
 trainFile = open("train.trees")
 trainLines = trainFile.readlines()
@@ -84,20 +134,11 @@ nonterminals = []
 getNonterminals()
 
 trees = []	#A list of Tree objects from training
-
-#Iterate over the training examples and generate a tree for each line
-for line in trainLines:
-	if line.strip() == 0:
-		continue
-
-	parsedTree = tree.Tree.from_str(line)
-	trees.append(parsedTree)
+generateTrees()
 
 #A list of unique terminals (words) in training
 terminals = []
 getTerminals()
-
-#print terminals
 
 #A dictionary with key values: <nonterminal label>, and values: <dictionary>
 #The sub-dictionary will have the right hand side of the rules (ie: (NN, VB)) as a keys
@@ -114,60 +155,4 @@ for tree in trees:
 pcfg = {}
 generatePCFG()
 
-top10 = []
-# for rule in pcfg:
-# 	if len(rule) < 3:
-# 		continue
-
-# 	for i in xrange(0, len(top10)):
-# 		if pcfg[rule] > top10[i][-1]:
-# 			entry = []
-# 			entry.extend(rule)
-# 			entry.append(pcfg[rule])
-# 			top10.insert(i, entry)
-# 			break
-
-# 	if len(top10) < 10:
-# 		entry = []
-# 		entry.extend(rule)
-# 		entry.append(pcfg[rule])
-# 		top10.append(entry)
-
-# 	if len(top10) == 11:
-# 		top10.pop()
-
-for lhs in ruleCounts:
-	expansions = ruleCounts[lhs]
-	for expansion in expansions:
-		if len(expansion) < 2:
-			continue
-		for i in xrange(0, len(top10)):
-			if expansions[expansion] > top10[i][-1]:
-				entry = []
-				entry.append(lhs)
-				entry.extend(expansion)
-				entry.append(expansions[expansion])
-				top10.insert(i, entry)
-				break
-		
-		if len(top10) < 10:
-			entry = []
-			entry.append(lhs)
-			entry.extend(expansion)
-			entry.append(expansions[expansion])
-			top10.append(entry)
-			break
-
-		if len(top10) == 11:
-			top10.pop()
-
-for entry in top10:
-	print "%-5s -> %-7s, %-10s| Frequency: %5d" % (entry[0], entry[1], entry[2], entry[3])
-
-# for rule in pcfg:
-# 	print "%-10s -> %-25s Prob: %.10f" % (rule[0], rule[1:], pcfg[rule])
-
-# for nonterminal in ruleCounts:
-# 	for rhs in ruleCounts[nonterminal]:
-# 		print "%-10s -> %-15s Prob: %f" % (nonterminal, rhs, ruleCounts[nonterminal][rhs])
-
+printTop10Rules()
