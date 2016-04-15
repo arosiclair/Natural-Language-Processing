@@ -67,11 +67,34 @@ def getCounts(inputWords):
   global tagBigramCount, tagCount, wordTagCount
 
   prev = getTag(inputWords[0])
+  #Get counts for first word
   tagCount[prev] = 1
 
   firstword = getWord(inputWords[0])
-  wordTagCount[(firstword, prev)] = 0
+  wordTagCount[(firstword, prev)] = 1
 
+
+  FEAT_CAPS = "FEATURE_CAPS"
+  FEAT_NUM = "FEATURE_NUM"
+  FEAT_ED = "FEATURE_ED"
+  NFEAT_CAPS = "FEATURE_CAPS"
+  NFEAT_NUM = "FEATURE_NUM"
+  NFEAT_ED = "FEATURE_ED"
+
+  if firstword.istitle():
+    wordTagCount[(FEAT_CAPS, prev)] = 1
+  else:
+    wordTagCount[(NFEAT_CAPS, prev)] = 1
+  if any(char.isdigit() for char in firstword):
+    wordTagCount[(FEAT_NUM, prev)] = 1
+  else:
+    wordTagCount[(NFEAT_NUM, prev)] = 1
+  if firstword.endswith("ed") or firstword.endswith("ED"):
+    wordTagCount[(FEAT_ED, prev)] = 1
+  else:
+    wordTagCount[(NFEAT_ED, prev)] = 1
+
+  #Iterate through rest of the words
   for i in xrange(1, len(inputWords)):
     currentWord = getWord(inputWords[i])
     currentTag = getTag(inputWords[i])
@@ -94,6 +117,20 @@ def getCounts(inputWords):
     except KeyError, e:
       wordTagCount[(currentWord, currentTag)] = 1
 
+    #Update feature-tag bigram count
+    if currentWord.istitle():
+      wordTagCount[(FEAT_CAPS, currentTag)] = 1
+    else:
+      wordTagCount[(NFEAT_CAPS, currentTag)] = 1
+    if any(char.isdigit() for char in currentWord):
+      wordTagCount[(FEAT_NUM, currentTag)] = 1
+    else:
+      wordTagCount[(NFEAT_NUM, currentTag)] = 1
+    if currentWord.endswith("ed") or currentWord.endswith("ED"):
+      wordTagCount[(FEAT_ED, currentTag)] = 1
+    else:
+      wordTagCount[(NFEAT_ED, currentTag)] = 1
+
     prev = currentTag
 
 #Generate a dictionary for tag transition probabilities using MLE
@@ -115,6 +152,15 @@ def generateMLEEmis():
   #Serialize and save this object as a .pkl file
   save_obj(probabilities, "mle-emissions")
 
+def generateMLETagUnigrams():
+  probabilities = {}
+  for tag in uniqueTags:
+    prob = float(tagCount[tag]) / len(trainWords)
+    probabilities[tag] = prob
+
+  #Serialize and save this object as a .pkl file
+  save_obj(probabilities, "mle-tag-unigrams")
+
 #Generate a dictionary for tag transition probabilities using MLE
 def generateLaplaceTrans():
   probabilities = {}
@@ -124,6 +170,8 @@ def generateLaplaceTrans():
 
   #Serialize and save this object as a .pkl file
   save_obj(probabilities, "laplace-transitions")
+  zeroCountProb = 1.0 / (tagCount[tagBigram[0]] + len(uniqueTags))
+  save_obj(zeroCountProb, "laplace-transitions-unknown")
 
 def generateLaplaceEmis():
   probabilities = {}
@@ -133,6 +181,8 @@ def generateLaplaceEmis():
 
   #Serialize and save this object as a .pkl file
   save_obj(probabilities, "laplace-emissions")
+  zeroCountProb = 1.0 / (tagCount[wordtag[1]] + len(uniqueWords))
+  save_obj(zeroCountProb, "laplace-emissions-unknown")
 
 def generateLaplaceTagUnigrams():
   probabilities = {}
@@ -179,3 +229,4 @@ generateMLEEmis()
 generateLaplaceEmis()
 #Generate Laplace tag unigram file
 generateLaplaceTagUnigrams()
+generateMLETagUnigrams()

@@ -1,0 +1,17 @@
+Name: Andrew Rosiclair
+SBU ID: 109235970
+Natural Language Processing HW2
+-------------------------------
+
+Unknown words in the Frequency Tagger:
+  I tried an implementation for handling unknown words in the unknownWordTag
+  function of freq-tagger.py. It looks at probabilities of capitalized words, 
+  words ending in -ed, and words containing a number. However, using this 
+  almost always produces a 'UH' tag prediction. This is probably because I
+  wasn't able to figure out what Pr(unk|tagj). This implementation isn't used
+  by default because of this. The function call is commented out.
+
+HMM Tagger:
+  The HMM tagger program runs and produces tag predictions, but all of them are
+  NNP. I wasn't able to figure out the source of this issue in time.
+

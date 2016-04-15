@@ -17,8 +17,9 @@ def load_obj(name):
 def getTagCounts():
   global tagCount
 
-  for word in trainWords:
-    tag = getTag(word)
+  for token in trainWords:
+    tag = getTag(token)
+    word = getWord(token)
     try:
       tagCount[tag] += 1
     except KeyError, e:
@@ -39,6 +40,7 @@ def decodeTagSequence(inputSeq):
       #emission prob becomes the following constant
       except KeyError, e:
         prob = (1.0 / (tagCount[tag] + len(uniqueWords))) * laplaceTagUnigramProbs[tag]
+        #prob = unknownWordTag(word, tag)
 
       #Replace argmax if this tag performs better
       if prob > argmax[1]:
@@ -47,6 +49,32 @@ def decodeTagSequence(inputSeq):
     tagPreds.append(argmax[0])
 
   return tagPreds
+
+def unknownWordTag(word, tag):
+  FEAT_CAPS = "FEATURE_CAPS"
+  FEAT_NUM = "FEATURE_NUM"
+  FEAT_ED = "FEATURE_ED"
+  NFEAT_CAPS = "FEATURE_CAPS"
+  NFEAT_NUM = "FEATURE_NUM"
+  NFEAT_ED = "FEATURE_ED"
+
+  #Get feature probabilities
+  if word.istitle():
+    titleProb = mleEmissProbs[FEAT_CAPS, tag]
+  else:
+    titleProb = mleEmissProbs[NFEAT_CAPS, tag]
+  if any(char.isdigit() for char in word):
+    numProb = mleEmissProbs[FEAT_NUM, tag]
+  else:
+    numProb = mleEmissProbs[NFEAT_NUM, tag]
+  if word.endswith("ed") or word.endswith("ED"):
+    edProb = mleEmissProbs[FEAT_ED, tag]
+  else:
+    edProb = mleEmissProbs[NFEAT_ED, tag]
+
+  featProb = (1.0 / 3) * titleProb + (1.0 / 3) * numProb + (1.0 / 3) * edProb
+  result = featProb * mleTagUnigramProbs[tag]
+  return result
 
 #--- BEGIN SCRIPT ---
 #Open and preprocess the test and training corpora
@@ -70,12 +98,17 @@ tagCount = {}
 getTagCounts()
 
 #Open laplace-emissions and laplace-tag-unigrams probability files
+mleEmissProbs = load_obj("mle-emissions")
 laplaceEmissProbs = load_obj("laplace-emissions")
 laplaceTagUnigramProbs = load_obj("laplace-tag-unigrams")
+mleTagUnigramProbs = load_obj("mle-tag-unigrams")
 
 #Use the frequency based tagger method to predict a tag sequence and then write
 #it to an output file
 predictedTagSeq = decodeTagSequence(testWords)
 outputFile = open("freq-tagger-output.txt", "w")
 for tag in predictedTagSeq:
-  outputFile.write(tag + " ")
+  if tag == "START":
+    outputFile.write("\n" + tag + " ")
+  else:
+    outputFile.write(tag + " ")
