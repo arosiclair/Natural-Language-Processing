@@ -1,0 +1,13 @@
+---------------------------------------------
+            	TOP 10 RULES
+---------------------------------------------                        
+PP    -> IN     , NP_NNP    | Frequency:   263
+PP    -> IN     , NP        | Frequency:   222
+PP    -> TO     , NP_NNP    | Frequency:   175
+NP    -> NNP    , NNP       | Frequency:   151
+TOP   -> SBARQ  , PUNC      | Frequency:   119
+TOP   -> FRAG_NP, PUNC      | Frequency:   116
+TOP   -> S_VP   , PUNC      | Frequency:   108
+S_VP' -> VB     , NP_PRP    | Frequency:    84
+S_VP  -> S_VP'  , NP        | Frequency:    81
+NP    -> DT     , NN        | Frequency:    79
