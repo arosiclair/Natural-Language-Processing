@@ -2,3 +2,7 @@
 *.pptx
 *.zip
 *.pdf
+HW1/LanguageModel.txt
+HW1/TopBigrams.txt
+HW2/hmm-tagger-output.txt
+HW2/sparse-words.py
