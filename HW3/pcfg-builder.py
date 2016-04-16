@@ -1,7 +1,7 @@
 #Probability CFG builder
 from __future__ import division
 import tree
-
+from pickle import dump, HIGHEST_PROTOCOL
 
 #Generate list of unique nonterminals from the training trees
 def getNonterminals():
@@ -120,6 +120,10 @@ def printPCFG():
 	for rule in pcfg:
 		print "%-10s -> %-25s Prob: %.10f" % (rule[0], rule[1:], pcfg[rule])
 
+def save_obj(obj, name):
+    with open(name + '.pkl', 'wb') as f:
+        dump(obj, f, HIGHEST_PROTOCOL)
+
 #--- BEGIN SCRIPT ---
 
 #Open the training file and get a list of lines
@@ -132,6 +136,7 @@ trainFile.close()
 #A list of unique nonterminals from training
 nonterminals = []
 getNonterminals()
+save_obj(nonterminals, "nonterminals")
 
 trees = []	#A list of Tree objects from training
 generateTrees()
@@ -139,6 +144,7 @@ generateTrees()
 #A list of unique terminals (words) in training
 terminals = []
 getTerminals()
+save_obj(terminals, "terminals")
 
 #A dictionary with key values: <nonterminal label>, and values: <dictionary>
 #The sub-dictionary will have the right hand side of the rules (ie: (NN, VB)) as a keys
@@ -154,5 +160,5 @@ for tree in trees:
 #Value = laplace smoothed probability of using that nonterminal and expansion
 pcfg = {}
 generatePCFG()
-
-printTop10Rules()
+save_obj(pcfg, "pcfg")
+#printTop10Rules()
