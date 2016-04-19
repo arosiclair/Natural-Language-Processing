@@ -1,6 +1,11 @@
----------------------------------------------
+Name: Andrew Rosiclair
+SBU ID: 109235970
+Natural Language Processing HW1
+----------------------------------------------
+
+----------------------------------------------
             	TOP 10 RULES
----------------------------------------------                        
+----------------------------------------------                        
 PP    -> IN     , NP_NNP    | Frequency:   263
 PP    -> IN     , NP        | Frequency:   222
 PP    -> TO     , NP_NNP    | Frequency:   175
@@ -11,3 +16,20 @@ TOP   -> S_VP   , PUNC      | Frequency:   108
 S_VP' -> VB     , NP_PRP    | Frequency:    84
 S_VP  -> S_VP'  , NP        | Frequency:    81
 NP    -> DT     , NN        | Frequency:    79
+
+----------------------------------------------
+				EVALUATION
+----------------------------------------------
+output.trees    406 brackets
+test.trees      406 brackets
+matching        299 brackets
+----------------------------------------------
+
+Prepositional phrases are the most frequent grammar rules used in training. This
+isn't surprising considreing the training sequences are all sentences describing
+taking flights to and from different places. Prepositional phrases are even more
+common than usage of the TOP start symbol.
+
+From skimming the parser output, gold standard, and the training trees, I think 
+at least some of the discrepency between the parser output and gold standard is
+due to the difference in use of start tags. 
